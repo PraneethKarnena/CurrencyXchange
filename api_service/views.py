@@ -39,3 +39,37 @@ def signup_api(request):
         response_status = status.HTTP_400_BAD_REQUEST
 
     return Response(data=data, status=response_status)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def signin_api(request):
+    response_status = data = None
+    try:
+        email = request.data['email']
+        password = request.data['password']
+
+        user_exists = User.objects.filter(username=email).exists()
+
+        # No such user
+        if not user_exists:
+            raise Exception('User does not exist!')
+
+        # Authenticate
+        user = authenticate(username=email, password=password)
+
+        # Invalid password
+        if user is None:
+            raise Exception('Invalid password!')
+
+        # User authenticated successfully, send Token
+        token, _ = Token.objects.get_or_create(user=user)
+
+        data = {'success': True, 'token': token.key}
+        response_status = status.HTTP_200_OK
+
+    except Exception as e:
+        data = {'success': False, 'message': str(e)}
+        response_status = status.HTTP_400_BAD_REQUEST
+
+    return Response(data=data, status=response_status)
