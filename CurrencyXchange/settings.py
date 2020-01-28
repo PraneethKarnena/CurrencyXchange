@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'web_service.apps.WebServiceConfig', # Web part of the project
+    'api_service.apps.ApiServiceConfig', # API functionality of the project
 ]
 
 MIDDLEWARE = [
