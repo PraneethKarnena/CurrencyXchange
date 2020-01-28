@@ -6,3 +6,9 @@ from django.views.decorators.http import require_http_methods
 def home_view(request):
     """ Home page - return simple home template """
     return render(request, 'web_service/home.html')
+
+
+@require_http_methods(['GET'])
+def signin_view(request):
+    """ Sign in page - return page with email and password fields """
+    return render(request, 'api_service/signin.html')
