@@ -35,7 +35,7 @@
                         <input name="password" type="password" class="form-control" placeholder="Password" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button><br>
-                    <a href="{% url 'web_urls:signup_page' %}">Register instead?</a>
+                    <a href="{% url 'web_service:signup_page' %}">Register instead?</a>
                 </form>
             </div>
         </div>
@@ -54,7 +54,7 @@
 
                 // User already signed in - redirect to dashboard
                 if (token) {
-                    window.location.replace('{% url "web_urls:dashboard_page" %}');
+                    window.location.replace('{% url "web_service:dashboard_page" %}');
                     return true;
                 }
                 return true;
@@ -102,7 +102,7 @@
 
                         var token = response.token;
                         localStorage.setItem('token', token);
-                        window.location.replace('{% url "web_urls:dashboard_page" %}');
+                        window.location.replace('{% url "web_service:dashboard_page" %}');
                     },
                 });
 

@@ -39,7 +39,7 @@
                             placeholder="Confirm Password" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button><br>
-                    <a href="{% url 'web_urls:signin_page' %}">Login instead?</a>
+                    <a href="{% url 'web_service:signin_page' %}">Login instead?</a>
                 </form>
             </div>
         </div>
@@ -58,7 +58,7 @@
 
                 // User already signed in - redirect to dashboard
                 if (token) {
-                    window.location.replace('{% url "web_urls:dashboard_page" %}');
+                    window.location.replace('{% url "web_service:dashboard_page" %}');
                     return true;
                 }
                 return true;
@@ -99,7 +99,7 @@
                                 <div class="col-lg-3"></div>
                                 <div class="col-lg-6 text-center">
                                     <div class="alert alert-success" role="alert">
-                                        ${response.message} Please <a href="{% url 'web_urls:signin_page' %}">login</a>.
+                                        ${response.message} Please <a href="{% url 'web_service:signin_page' %}">login</a>.
                                     </div>
                                 </div>
                             </div>
