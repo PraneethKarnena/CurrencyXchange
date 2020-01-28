@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -21,10 +22,46 @@
             </div>
         </div>
 
+        <div class="row mt-3 mb-3">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8" align="center">
+                <div id="profile-image"></div>
+                <div class="mt-3 mb-3">
+                    <button data-toggle="modal" data-target="#uploadPictureModal" id="uploadPicBtn" type="button" class="btn btn-primary">Upload Picture</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="uploadPictureModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Upload New Picture</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" enctype="multipart/form-data" id="uploadPictureForm">
+                    <div class="modal-body">
+                            <input name="file" type="file" required accept="image/png, image/jpeg">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         $('document').ready(function () {
+
+            // Token for authorization
+            var authToken = localStorage.getItem('token');
 
             // Check if the user is logged in
             checkAuthentication();
@@ -38,6 +75,55 @@
                     return true;
                 }
                 return true;
+            }
+
+
+            // Get profile picture
+            getProfilePicture();
+            function getProfilePicture() {
+                $.ajax({
+                    method: 'GET',
+                    url: '{% url "api_service:profile_picture_api" %}',
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                    success: function (response) {
+                        if (response) {
+                            var pictureUrl = response[0].file_url;
+                            var imageTag = `<img src="${pictureUrl}" class="img-fluid">`;
+                            $('#profile-image').html(imageTag);
+                        }
+                    },
+                    error: function (response) {
+                        console.log(response);
+                    },
+                });
+            }
+
+            $('#uploadPictureForm').on('submit', function(e) {
+                e.preventDefault();
+                uploadPicture();
+            });
+
+            // Upload new picture
+            function uploadPicture() {
+                var formData = new FormData(document.getElementById('uploadPictureForm'));
+                $.ajax({
+                    method: 'POST',
+                    url: '{% url "api_service:profile_picture_api" %}',
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    success: function (response) {
+                        getProfilePicture();
+                    },
+                    error: function (response) {
+                        console.log(response);
+                    },
+                });
             }
 
 
