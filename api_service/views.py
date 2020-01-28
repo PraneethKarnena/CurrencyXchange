@@ -11,6 +11,7 @@ from rest_framework.authtoken.models import Token
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup_api(request):
+    """ Sign up the user """
     response_status = data = None
     try:
         email = request.data['email']
@@ -44,6 +45,7 @@ def signup_api(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signin_api(request):
+    """ Sign in the user """
     response_status = data = None
     try:
         email = request.data['email']
