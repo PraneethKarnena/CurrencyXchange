@@ -6,6 +6,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework import generics
+
+from api_service import models
+from api_service import serializers
 
 
 @api_view(['POST'])
@@ -75,3 +79,17 @@ def signin_api(request):
         response_status = status.HTTP_400_BAD_REQUEST
 
     return Response(data=data, status=response_status)
+
+
+class ProfilePictureListView(generics.ListCreateAPIView):
+
+    serializer_class = serializers.ProfilePictureSerializer
+
+    def get_queryset(self):
+        queryset = models.PictureModel.objects.filter(user=self.request.user)
+        return queryset
+
+    def perform_create(self, serializer):
+        # Remove previous profile pictures before adding one
+        _ = models.PictureModel.objects.filter(user=self.request.user).delete()
+        serializer.save(user=self.request.user)
