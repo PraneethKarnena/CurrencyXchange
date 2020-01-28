@@ -8,3 +8,11 @@ class PictureModel(models.Model):
 
     def __str__(self):
         return f'{self.user.email} - {self.file.name}'
+
+
+class WalletModel(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=False, blank=False)
+    money = models.FloatField(default=0.0)
+
+    def __str__(self):
+        return f'{self.user.email} - {self.money}'
