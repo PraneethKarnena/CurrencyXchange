@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>CurrencyXchange - Signin</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+</head>
+
+<body>
+    <div class="container-fluid">
+
+        <div class="row mt-3 mb-3">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-6 text-center">
+                <h1>CurrencyXchange | Sign in</h1>
+            </div>
+        </div>
+
+        <div id="messageBox"></div>
+
+        <div class="row mt-3 mb-3">
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4 text-center">
+                <form method="post" id="signinForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input name="email" type="email" class="form-control" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input name="password" type="password" class="form-control" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button><br>
+                    <a href="{% url 'web_urls:signup_page' %}">Register instead?</a>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        $('document').ready(function () {
+
+            checkAuthentication();
+
+            // Check if the user is already logged in
+            function checkAuthentication() {
+                var myStorage = localStorage;
+                var token = localStorage.getItem('token');
+
+                // User already signed in - redirect to dashboard
+                if (token) {
+                    window.location.replace('{% url "web_urls:dashboard_page" %}');
+                    return true;
+                }
+                return true;
+            }
+
+            // Sign up form submission - call the Sign up API
+            $('#signinForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var email = $("input[name='email']").val();
+                var password = $("input[name='password']").val();
+
+                $.ajax({
+                    method: 'POST',
+                    url: '{% url "api_urls:signin_api" %}',
+                    data: {
+                        email: email,
+                        password: password,
+                    },
+                    error: function (response) {
+                        var message = `
+                            <div class="row mt-3 mb-3">
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-6 text-center">
+                                    <div class="alert alert-danger" role="alert">
+                                        ${response.responseJSON.message}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        $('#messageBox').html(message);
+                    },
+                    success: function (response) {
+                        var message = `
+                            <div class="row mt-3 mb-3">
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-6 text-center">
+                                    <div class="alert alert-success" role="alert">
+                                        Success! Redirecting...
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        $('#messageBox').html(message);
+
+                        var token = response.token;
+                        localStorage.setItem('token', token);
+                        window.location.replace('{% url "web_urls:dashboard_page" %}');
+                    },
+                });
+
+                return false;
+            });
+        });
+    </script>
+
+</body>
+
+</html>
