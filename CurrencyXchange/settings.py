@@ -138,3 +138,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
+
+# Media settings
+MEDIA_URL = '/media/'
