@@ -19,5 +19,6 @@ from django.urls import path, include
 urlpatterns = [
     # path('admin/', admin.site.urls),
 
-    path('', include(('web_service.urls', 'web_service'), namespace='web_service')),
+    path('api/', include(('api_service.urls', 'api_service'), namespace='api_service')), # Route for API service
+    path('', include(('web_service.urls', 'web_service'), namespace='web_service')), # Route for web service
 ]
