@@ -34,7 +34,7 @@
 
                 // User already signed in - redirect to dashboard
                 if (!token) {
-                    window.location.replace('{% url "web_urls:signin_page" %}');
+                    window.location.replace('{% url "web_service:signin_page" %}');
                     return true;
                 }
                 return true;
