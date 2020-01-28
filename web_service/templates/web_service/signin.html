@@ -69,7 +69,7 @@
 
                 $.ajax({
                     method: 'POST',
-                    url: '{% url "api_urls:signin_api" %}',
+                    url: '{% url "api_service:signin_api" %}',
                     data: {
                         email: email,
                         password: password,
