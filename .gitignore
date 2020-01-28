@@ -5,6 +5,8 @@
 **/ENV/**
 **/media/**
 
+**/profile-pictures/**
+
 # Ignore socket files
 **/**.sock
 
