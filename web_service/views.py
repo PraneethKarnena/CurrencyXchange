@@ -18,3 +18,9 @@ def signin_view(request):
 def signup_view(request):
     """ Sign up page - return page with email, confirm_password and password fields """
     return render(request, 'web_service/signup.html')
+
+
+@require_http_methods(['GET'])
+def dashboard_view(request):
+    """ Dashboard page - return page with user details """
+    return render(request, 'web_service/dashboard.html')
