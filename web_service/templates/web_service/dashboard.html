@@ -79,7 +79,8 @@
                     <form method="POST" id="addMoneyForm">
                         <div class="modal-body">
                             <div class="form-group">
-                                <input id="moneyInput" type="number" name="money" class="form-control" placeholder="Money" required>
+                                <input id="moneyInput" type="number" name="money" class="form-control"
+                                    placeholder="Money" required>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -88,6 +89,99 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+
+        <hr class="ml-3 mr-3">
+
+        <div class="row mt-3 mb-3">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <h3>Currency Conversion:</h3>
+            </div>
+        </div>
+
+        <div class="row mt-3 mb-3">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <form action="" method="post" id="currencyConversionForm">
+                    <div class="form-group">
+                        <select id="fromCurrency" name="from_currency" required id="">
+                            <option value="">From Currency</option>
+                            <option value="USD">USD</option>
+                            <option value="JPY">JPY</option>
+                            <option value="BGN">BGN</option>
+                            <option value="CZK">CZK</option>
+                            <option value="DKK">DKK</option>
+                            <option value="GBP">GBP</option>
+                            <option value="HUF">HUF</option>
+                            <option value="PLN">PLN</option>
+                            <option value="RON">RON</option>
+                            <option value="SEK">SEK</option>
+                            <option value="CHF">CHF</option>
+                            <option value="ISK">ISK</option>
+                            <option value="NOK">NOK</option>
+                            <option value="HRK">HRK</option>
+                            <option value="RUB">RUB</option>
+                            <option value="TRY">TRY</option>
+                            <option value="AUD">AUD</option>
+                            <option value="BRL">BRL</option>
+                            <option value="CAD">CAD</option>
+                            <option value="CNY">CNY</option>
+                            <option value="HKD">HKD</option>
+                            <option value="IDR">IDR</option>
+                            <option value="ILS">ILS</option>
+                            <option value="INR">INR</option>
+                            <option value="KRW">KRW</option>
+                            <option value="MXN">MXN</option>
+                            <option value="MYR">MYR</option>
+                            <option value="NZD">NZD</option>
+                            <option value="PHP">PHP</option>
+                            <option value="SGD">SGD</option>
+                            <option value="THB">THB</option>
+                            <option value="ZAR">ZAR</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="toCurrency" name="to_currency" required id="">
+                            <option value="">To Currency</option>
+                            <option value="USD">USD</option>
+                            <option value="JPY">JPY</option>
+                            <option value="BGN">BGN</option>
+                            <option value="CZK">CZK</option>
+                            <option value="DKK">DKK</option>
+                            <option value="GBP">GBP</option>
+                            <option value="HUF">HUF</option>
+                            <option value="PLN">PLN</option>
+                            <option value="RON">RON</option>
+                            <option value="SEK">SEK</option>
+                            <option value="CHF">CHF</option>
+                            <option value="ISK">ISK</option>
+                            <option value="NOK">NOK</option>
+                            <option value="HRK">HRK</option>
+                            <option value="RUB">RUB</option>
+                            <option value="TRY">TRY</option>
+                            <option value="AUD">AUD</option>
+                            <option value="BRL">BRL</option>
+                            <option value="CAD">CAD</option>
+                            <option value="CNY">CNY</option>
+                            <option value="HKD">HKD</option>
+                            <option value="IDR">IDR</option>
+                            <option value="ILS">ILS</option>
+                            <option value="INR">INR</option>
+                            <option value="KRW">KRW</option>
+                            <option value="MXN">MXN</option>
+                            <option value="MYR">MYR</option>
+                            <option value="NZD">NZD</option>
+                            <option value="PHP">PHP</option>
+                            <option value="SGD">SGD</option>
+                            <option value="THB">THB</option>
+                            <option value="ZAR">ZAR</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Convert</button>
+                </form>
+                <b><p id="convertedCurrency" class="mt-3 mb-3"></p></b>
             </div>
         </div>
 
@@ -193,7 +287,7 @@
 
 
             // Create Wallet
-            $('#walletMoney').on('click', '#createWalletBtn', function(e) {
+            $('#walletMoney').on('click', '#createWalletBtn', function (e) {
                 e.preventDefault();
                 $.ajax({
                     method: 'POST',
@@ -214,10 +308,10 @@
 
 
             // Add money to wallet
-            $('#addMoneyForm').on('submit', function(e) {
+            $('#addMoneyForm').on('submit', function (e) {
                 var money = $('#moneyInput').val();
-                if (money <= 0) {
-                    money = 100;
+                if (money < 0) {
+                    money = 0;
                 }
                 e.preventDefault();
                 $.ajax({
@@ -237,6 +331,35 @@
                         console.log(response);
                     },
                 });
+            });
+
+
+            // Currency Conversion
+            $('#currencyConversionForm').on('submit', function (e) {
+                e.preventDefault();
+                var fromCurrency = $('select[name="from_currency"]').val();
+                var toCurrency = $('select[name="to_currency"]').val();
+                if (fromCurrency !== toCurrency) {
+                    $.ajax({
+                        method: 'POST',
+                        url: '{% url "api_service:currency_conversion_api" %}',
+                        headers: {
+                            Authorization: `Token ${authToken}`,
+                        },
+                        data: {
+                            from_currency: fromCurrency,
+                            to_currency: toCurrency,
+                        },
+                        success: function (response) {
+                            var toAmount = response['data']['to_amount'];
+                            var convertedCurrencyHtml = `1 ${fromCurrency} = ${toCurrency} ${toAmount}`;
+                            $('#convertedCurrency').html(convertedCurrencyHtml);
+                        },
+                        error: function (response) {
+                            console.log(response);
+                        },
+                    });
+                }
             });
 
 
