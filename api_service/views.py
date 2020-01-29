@@ -1,5 +1,9 @@
+from datetime import timedelta
+import requests
+
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django.utils import timezone
 
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -113,3 +117,58 @@ class WalletListView(generics.ListCreateAPIView):
             return
 
         serializer.save(user=self.request.user)
+
+
+@api_view(['POST',])
+def currency_conversion_api(request):
+    """ Convert the currency """
+    response_status = data = None
+    try:
+
+        from_currency = request.data['from_currency']
+        to_currency = request.data['to_currency']
+
+        if to_currency == from_currency:
+            raise Exception('Currencies are same!')
+
+        CACHE_TIME_HOURS = 1
+
+        conversion = models.CurrencyConversionModel.objects.filter(
+            from_currency=from_currency,
+            to_currency=to_currency,
+            updated_at__gt=(timezone.now()-timedelta(hours=CACHE_TIME_HOURS))
+        )
+
+        conversion_object = None
+        if conversion:
+            conversion_object = conversion[0]
+        else:
+            _ = models.CurrencyConversionModel.objects.filter(from_currency=from_currency,
+            to_currency=to_currency,).delete()
+
+            response = call_conversion_api(from_currency, to_currency)
+            conversion = models.CurrencyConversionModel.objects.create(
+                from_currency=from_currency,
+                to_currency=to_currency,
+                to_amount=response['rates'][to_currency]
+            )
+            conversion_object = conversion
+
+        conversion_serializer = serializers.CurrencyConversionSerializer(conversion_object, many=False)
+
+        data = {'success': True, 'data': conversion_serializer.data}
+        response_status = status.HTTP_200_OK
+
+    except Exception as e:
+        data = {'success': False, 'message': str(e)}
+        response_status = status.HTTP_400_BAD_REQUEST
+
+    return Response(data=data, status=response_status)
+
+
+def call_conversion_api(from_currency, to_currency):
+    """ Call the 3rd-party conversion API """
+    API_URL = f'https://api.exchangeratesapi.io/latest?symbols={to_currency}&base={from_currency}'
+
+    response = requests.get(API_URL).json()
+    return response
