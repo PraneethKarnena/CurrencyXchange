@@ -8,4 +8,5 @@ urlpatterns = [
 
     path('profile-picture/', views.ProfilePictureListView.as_view(), name='profile_picture_api'),
     path('wallet/', views.WalletListView.as_view(), name='wallet_api'),
+    path('convert-currency/', views.currency_conversion_api, name='currency_conversion_api'),
 ]
