@@ -93,3 +93,23 @@ class ProfilePictureListView(generics.ListCreateAPIView):
         # Remove previous profile pictures before adding one
         _ = models.PictureModel.objects.filter(user=self.request.user).delete()
         serializer.save(user=self.request.user)
+
+
+class WalletListView(generics.ListCreateAPIView):
+
+    serializer_class = serializers.WalletSerializer
+
+    def get_queryset(self):
+        queryset = models.WalletModel.objects.filter(user=self.request.user)
+        return queryset
+
+    def perform_create(self, serializer):
+        wallet_exists = models.WalletModel.objects.filter(user=self.request.user).exists()
+        if wallet_exists:
+            wallet = models.WalletModel.objects.get(user=self.request.user)
+            wallet_money = wallet.money
+            wallet.delete()
+            serializer.save(user=self.request.user, money=(wallet_money + float(self.request.data['money'])))
+            return
+
+        serializer.save(user=self.request.user)
