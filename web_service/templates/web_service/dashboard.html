@@ -27,7 +27,8 @@
             <div class="col-lg-8" align="center">
                 <div id="profile-image"></div>
                 <div class="mt-3 mb-3">
-                    <button data-toggle="modal" data-target="#uploadPictureModal" id="uploadPicBtn" type="button" class="btn btn-primary">Upload Picture</button>
+                    <button data-toggle="modal" data-target="#uploadPictureModal" id="uploadPicBtn" type="button"
+                        class="btn btn-primary">Upload Picture</button>
                 </div>
             </div>
         </div>
@@ -43,13 +44,48 @@
                         </button>
                     </div>
                     <form method="POST" enctype="multipart/form-data" id="uploadPictureForm">
-                    <div class="modal-body">
+                        <div class="modal-body">
                             <input name="file" type="file" required accept="image/png, image/jpeg">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <hr class="ml-3 mr-3">
+
+        <div class="row mt-3 mb-3">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <h3>Wallet: <span id="walletMoney"></span></h3>
+                <p id="addMoney"></p>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="addMoneyModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Money</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
-                    </div>
+                    <form method="POST" id="addMoneyForm">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <input id="moneyInput" type="number" name="money" class="form-control" placeholder="Money" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -100,7 +136,7 @@
                 });
             }
 
-            $('#uploadPictureForm').on('submit', function(e) {
+            $('#uploadPictureForm').on('submit', function (e) {
                 e.preventDefault();
                 uploadPicture();
             });
@@ -125,6 +161,83 @@
                     },
                 });
             }
+
+
+            // Get wallet money
+            getWallet();
+            function getWallet() {
+                $.ajax({
+                    method: 'GET',
+                    url: '{% url "api_service:wallet_api" %}',
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.length !== 0) {
+                            $('#walletMoney').html(`$${response[0].money}`);
+                            $('#addMoney').html(`<button data-toggle="modal" data-target="#addMoneyModal" id="addMoneyBtn" type="button" class="btn btn-primary">Add Money</button>`);
+                        } else {
+                            var addMoneyHtml = `
+                            <button id="createWalletBtn" class='btn btn-primary' type='button'>Create Wallet</button>
+                            `;
+                            $('#walletMoney').html(addMoneyHtml);
+                        }
+                    },
+                    error: function (response) {
+                        console.log(response);
+                    },
+                });
+            }
+
+
+            // Create Wallet
+            $('#walletMoney').on('click', '#createWalletBtn', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    method: 'POST',
+                    url: '{% url "api_service:wallet_api" %}',
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        getWallet();
+                    },
+                    error: function (response) {
+                        console.log(response);
+                    },
+                });
+            });
+
+
+            // Add money to wallet
+            $('#addMoneyForm').on('submit', function(e) {
+                var money = $('#moneyInput').val();
+                if (money <= 0) {
+                    money = 100;
+                }
+                e.preventDefault();
+                $.ajax({
+                    method: 'POST',
+                    url: '{% url "api_service:wallet_api" %}',
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                    data: {
+                        money: money,
+                    },
+                    success: function (response) {
+                        getWallet();
+                        $('#moneyInput').val('');
+                    },
+                    error: function (response) {
+                        console.log(response);
+                    },
+                });
+            });
 
 
         });
