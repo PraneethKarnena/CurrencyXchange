@@ -10,3 +10,10 @@ class ProfilePictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PictureModel
         fields = ['file', 'file_url']
+
+
+class WalletSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.WalletModel
+        fields = ['money']
