@@ -17,3 +17,10 @@ class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WalletModel
         fields = ['money']
+
+
+class CurrencyConversionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.CurrencyConversionModel
+        fields = '__all__'
