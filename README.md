@@ -4,13 +4,18 @@ A simple Django application with integrated Django Rest Framework.
 
 Tech used: Python, Django, Django Rest Framework, SQLite, Bootstrap and third-party libraries.
 
-Back-end is exposed as a Rest API. Front-end is made fully responsive, powered by Bootstrap.
+Back-end is exposed as a Rest API. Front-end is made fully responsive, powered by Bootstrap. 
+
+Token authentication has been implemented. The Rest API endpoints can be found in the Postman collections file in the root. 
+
+While making requests from the browser to the API, the Token is stored in the Local Storage of the browser.
 
 ### Features:
 
 *   Users can sign up/sign in
 *   Users can create/add money in wallet
 *   Users can check/convert currency prices in different currencies
+*   Users can upload profile picture
 
 ### Run:
 
