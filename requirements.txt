@@ -6,7 +6,7 @@ coreschema==0.0.4
 Django==2.2.9
 django-filter==2.2.0
 django-guardian==2.1.0
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 idna==2.8
 isort==4.3.21
 itypes==1.1.0
